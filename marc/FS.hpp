@@ -2,12 +2,11 @@
 
 #include <experimental/filesystem>
 
+#include "pch.h"
+#include "Types.h"
+
 namespace marc {
     namespace fs = std::experimental::filesystem;
-    typedef uintmax_t int64;
-    typedef unsigned int uint;
-    typedef unsigned long dword;
-    typedef void* handle;
 
     namespace fs_types {
         enum { readMode, writeMode, appendMode };
@@ -25,6 +24,7 @@ namespace marc {
     public:
         FS();
         FS(fs::path path, short int openMode = fs_types::readMode, dword flag = fs_types::Normal);
+        int64 getFileSize();
         bool open(fs::path path, short int openMode, dword flag);
         bool seek(int64 offset, short int moveMethod = fs_types::fileBegin);
         bool read(uint size, void *cBuffer);

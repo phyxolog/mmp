@@ -2,9 +2,14 @@
 #include "FS.hpp"
 
 namespace marc {
+
     FS::FS() { }
     FS::FS(fs::path path, short int openMode, dword flag) : path(path) {
         open(path, openMode, flag);
+    }
+
+    int64 FS::getFileSize() {
+        return fs::file_size(path);
     }
 
     dword FS::getFileFlag(dword flag) const {
@@ -20,6 +25,7 @@ namespace marc {
     }
 
     bool FS::open(fs::path path, short int openMode, dword flag) {
+        path = path;
         hFile = ::CreateFile(
             path.c_str(),
             openMode == fs_types::readMode ? GENERIC_READ : GENERIC_WRITE | GENERIC_READ,
@@ -81,4 +87,5 @@ namespace marc {
             ::CloseHandle(hFile);
         }
     }
+
 }
