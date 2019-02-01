@@ -39,7 +39,7 @@ namespace marc {
                 streamDetector->execute(buffer, bufferSize, currentOffset, localStreamList);
 
                 if (!localStreamList.empty()) {
-                    streamDetector->analyzeOffsets(filePtr, localStreamList);
+                    streamDetector->analyze(filePtr, localStreamList);
                 }
 
                 std::copy(localStreamList.rbegin(), localStreamList.rend(), front_inserter(streamList));

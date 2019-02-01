@@ -12,6 +12,6 @@ namespace marc {
     public:
         virtual ~IStreamDetector() { }
         virtual void execute(const char *, uint, int64, std::list<Stream>&) = 0;
-        virtual void analyzeOffsets(FS*, std::list<Stream>&) = 0;
+        virtual void analyze(FS*, std::list<Stream>&) = 0;
     };
 }

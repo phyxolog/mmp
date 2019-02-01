@@ -54,7 +54,7 @@ namespace marc {
             }
         }
 
-        void analyzeOffsets(FS* filePtr, std::list<Stream> &streamList) {
+        void analyze(FS* filePtr, std::list<Stream> &streamList) {
             Header *header = new Header;
 
             for (auto stream = streamList.rbegin(); stream != streamList.rend(); stream++) {
