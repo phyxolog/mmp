@@ -2,7 +2,6 @@
 #include "FS.hpp"
 
 namespace marc {
-
     FS::FS() { }
     FS::FS(fs::path path, short int openMode, dword flag) : path(path) {
         open(path, openMode, flag);
@@ -87,5 +86,4 @@ namespace marc {
             ::CloseHandle(hFile);
         }
     }
-
 }

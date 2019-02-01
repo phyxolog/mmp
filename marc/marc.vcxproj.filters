@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\detectors">
+      <UniqueIdentifier>{f07b8059-aa4f-4132-a748-328aba2ebc97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\detectors\interface">
+      <UniqueIdentifier>{12ac77d2-cd9e-4b6a-ab8d-8fb0a71a3164}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -24,7 +30,19 @@
     <ClInclude Include="TurboBM.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
+    <ClInclude Include="StreamAnalyzer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IStreamDetector.hpp">
+      <Filter>Header Files\detectors\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RiffWaveDetector.hpp">
+      <Filter>Header Files\detectors</Filter>
+    </ClInclude>
+    <ClInclude Include="Stream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -39,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TurboBM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamAnalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

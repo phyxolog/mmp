@@ -8,7 +8,6 @@
 #include <algorithm>
 
 namespace marc {
-
     typedef std::vector<size_t> skiptableType;
     typedef std::vector<size_t> occtableType;
 
@@ -17,7 +16,7 @@ namespace marc {
     typedef SSIZE_T ssize_t;
 #endif
 
-    class TurboSearch {
+    class TurboBM {
     private:
         static size_t backwardsMatchLen(const char*, const char*, size_t, size_t, size_t);
 
@@ -26,5 +25,4 @@ namespace marc {
         static const skiptableType CreateSkipTable(const char*, size_t);
         static const occtableType CreateOccTable(const char*, size_t);
     };
-
 }
