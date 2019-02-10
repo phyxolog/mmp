@@ -24,5 +24,7 @@ namespace marc {
 
         void addStreamDetector(IStreamDetector *streamDetector);
         void execute();
+
+        std::list<Stream>& getStreamList();
     };
 }

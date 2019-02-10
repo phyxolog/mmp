@@ -155,14 +155,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CRC32.hpp" />
     <ClInclude Include="FS.hpp" />
     <ClInclude Include="Stream.hpp" />
     <ClInclude Include="IStreamDetector.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RiffWaveDetector.hpp" />
     <ClInclude Include="StreamAnalyzer.hpp" />
+    <ClInclude Include="StreamCompressor.hpp" />
     <ClInclude Include="TurboBM.hpp" />
     <ClInclude Include="Types.hpp" />
+    <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FS.cpp" />
@@ -174,6 +177,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StreamAnalyzer.cpp" />
+    <ClCompile Include="StreamCompressor.cpp" />
     <ClCompile Include="TurboBM.cpp" />
   </ItemGroup>
   <ItemGroup>

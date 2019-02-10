@@ -12,6 +12,11 @@
 namespace marc {
     class RiffWaveDetector : public IStreamDetector {
     private:
+        const char* signature;
+        uint signatureSize;
+        marc::skiptableType skiptableType;
+        marc::occtableType occtableType;
+
 #pragma pack(push, 1)
         typedef struct Header {
             char ChunkId[4];
@@ -35,11 +40,14 @@ namespace marc {
         }
 
     public:
-        void execute(const char *buffer, uint bufferSize, int64 currentOffset, std::list<Stream> &streamList) {
-            const char *signature = "RIFF"; uint signatureSize = std::strlen(signature);
-            marc::skiptableType skiptableType = marc::TurboBM::CreateSkipTable(signature, signatureSize);
-            marc::occtableType occtableType = marc::TurboBM::CreateOccTable(signature, signatureSize);
+        RiffWaveDetector() {
+            signature = "RIFF";
+            signatureSize = std::strlen(signature);
+            skiptableType = marc::TurboBM::CreateSkipTable(signature, signatureSize);
+            occtableType = marc::TurboBM::CreateOccTable(signature, signatureSize);
+        }
 
+        void execute(const char *buffer, uint bufferSize, int64 currentOffset, std::list<Stream> &streamList) {
             uint index = marc::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
 
             while (index != -1) {
@@ -63,7 +71,7 @@ namespace marc {
                 
                 stream->setSize(header->ChunkSize + 8);
 
-                // TODO: Analyze stream on compressible/valid
+                // TODO: Analyze stream on compressible/validable
             }
         }
     };

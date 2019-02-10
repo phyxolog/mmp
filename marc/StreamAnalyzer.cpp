@@ -48,14 +48,11 @@ namespace marc {
             currentOffset += bufferSize - rollbackSize;
         }
 
-        for (auto stream : streamList) {
-            std::cout << "Stream: " << stream.getType()
-                << ", Size: " << stream.getSize()
-                << ", Offset: " << stream.getOffset()
-                << std::endl;
-        }
-
         delete[] buffer;
         return;
+    }
+
+    std::list<Stream>& StreamAnalyzer::getStreamList() {
+        return streamList;
     }
 }

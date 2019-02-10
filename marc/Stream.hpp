@@ -23,15 +23,15 @@ namespace marc {
             type = _type;
         }
 
-        int64 getOffset() {
+        int64 getOffset() const {
             return offset;
         }
 
-        int64 getSize() {
+        int64 getSize() const {
             return size;
         }
 
-        Type getType() {
+        Type getType() const {
             return type;
         }
     };
