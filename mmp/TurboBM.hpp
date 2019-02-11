@@ -6,7 +6,7 @@
 #include <climits>
 #include <algorithm>
 
-namespace marc {
+namespace mmp {
     typedef std::vector<size_t> skiptableType;
     typedef std::vector<size_t> occtableType;
 

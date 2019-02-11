@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace marc {
+namespace mmp {
     typedef uintmax_t int64;
     typedef unsigned int uint;
     typedef unsigned long dword;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace marc {
+namespace mmp {
     class CRC32 {
     private:
         constexpr static const uint32_t CRC32TABLE[] = {

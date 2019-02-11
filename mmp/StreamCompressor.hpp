@@ -9,17 +9,17 @@
 #include "Types.hpp"
 #include "Utils.hpp"
 
-namespace marc {
+namespace mmp {
     class StreamCompressor {
     private:
         uint bufferSize;
-        marc::FS *filePtr, *cFilePtr;
+        mmp::FS *filePtr, *cFilePtr;
 
         void CompressStream(Stream&, MarcCompressedStream&, fs::path&);
         bool TakCompress(fs::path, fs::path&, unsigned short);
 
     public:
-        StreamCompressor(marc::FS *filePtr, marc::FS *cFilePtr, uint bufferSize);
+        StreamCompressor(mmp::FS *filePtr, mmp::FS *cFilePtr, uint bufferSize);
         ~StreamCompressor();
 
         void execute(std::list<Stream>&);

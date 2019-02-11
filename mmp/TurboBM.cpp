@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "TurboBM.hpp"
 
-namespace marc {
+namespace mmp {
     size_t TurboBM::backwardsMatchLen(const char* ptr1, const char* ptr2, size_t strlen, size_t maxlen, size_t minlen) {
         size_t result = minlen;
         while (result < maxlen && ptr1[strlen - 1 - result] == ptr2[strlen - 1 - result]) {

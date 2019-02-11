@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "StreamAnalyzer.hpp"
 
-namespace marc {
-    StreamAnalyzer::StreamAnalyzer(marc::FS *filePtr, uint bufferSize) : filePtr(filePtr), bufferSize(bufferSize) { }
+namespace mmp {
+    StreamAnalyzer::StreamAnalyzer(mmp::FS *filePtr, uint bufferSize) : filePtr(filePtr), bufferSize(bufferSize) { }
     StreamAnalyzer::~StreamAnalyzer() { }
 
     void StreamAnalyzer::addStreamDetector(IStreamDetector *streamDetector) {

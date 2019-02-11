@@ -4,7 +4,7 @@
 
 #include "Types.hpp"
 
-namespace marc {
+namespace mmp {
     namespace fs = std::experimental::filesystem;
 
     namespace fs_types {

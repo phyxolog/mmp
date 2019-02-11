@@ -6,15 +6,15 @@
 #include "FS.hpp"
 #include "Types.hpp"
 
-namespace marc {
+namespace mmp {
     namespace fs = std::experimental::filesystem;
 
     class Utils {
     public:
-        static uint32_t calculateCrc32(marc::FS *filePtr, int64 offset, int64 size) {
+        static uint32_t calculateCrc32(mmp::FS *filePtr, int64 offset, int64 size) {
             uint bufferSize = 16 * 1024 * 1024;
             int64 readBytes = 0;
-            filePtr->seek(offset, marc::fs_types::fileBegin);
+            filePtr->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
                 bufferSize = static_cast<uint>(size);
@@ -37,9 +37,9 @@ namespace marc {
             return crc32;
         }
 
-        static void extractFileFromStream(marc::FS *filePtr, int64 offset, int64 size, std::string outFileName) {
+        static void extractFileFromStream(mmp::FS *filePtr, int64 offset, int64 size, std::string outFileName) {
             uint bufferSize = 256 * 1024;
-            filePtr->seek(offset, marc::fs_types::fileBegin);
+            filePtr->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
                 bufferSize = static_cast<unsigned int>(size);
@@ -47,7 +47,7 @@ namespace marc {
 
             int64 readBytes = 0;
             char *buffer = new char[bufferSize];
-            marc::FS *outFile = new marc::FS(outFileName, marc::fs_types::writeMode);
+            mmp::FS *outFile = new mmp::FS(outFileName, mmp::fs_types::writeMode);
 
             while (readBytes < size) {
                 if ((readBytes + bufferSize) > size) {
@@ -63,10 +63,10 @@ namespace marc {
             outFile->close();
         }
 
-        static void CopyData(marc::FS *src, marc::FS *dst, uintmax_t offset, uintmax_t size) {
+        static void CopyData(mmp::FS *src, mmp::FS *dst, uintmax_t offset, uintmax_t size) {
             uint bufferSize = 256 * 1024;
             int64 readBytes = 0;
-            src->seek(offset, marc::fs_types::fileBegin);
+            src->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
                 bufferSize = static_cast<unsigned int>(size);
@@ -88,7 +88,7 @@ namespace marc {
             delete[] buffer;
         }
 
-        static void ZeroFile(marc::FS *src, uint size) {
+        static void ZeroFile(mmp::FS *src, uint size) {
             char *nulls = new char[size];
             memset(nulls, 0, size);
             src->write(size, nulls);

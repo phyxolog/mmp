@@ -2,7 +2,7 @@
 
 #include "Types.hpp"
 
-namespace marc {
+namespace mmp {
     class Stream {
     private:
         int64 size = 0;

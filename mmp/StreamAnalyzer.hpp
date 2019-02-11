@@ -9,16 +9,16 @@
 #include "Stream.hpp"
 #include "IStreamDetector.hpp"
 
-namespace marc {
+namespace mmp {
     class StreamAnalyzer {
     private:
         uint bufferSize;
-        marc::FS *filePtr;
+        mmp::FS *filePtr;
         std::list<IStreamDetector*> streamDetectorList;
         std::list<Stream> streamList;
 
     public:
-        StreamAnalyzer(marc::FS *filePtr, uint bufferSize);
+        StreamAnalyzer(mmp::FS *filePtr, uint bufferSize);
         ~StreamAnalyzer();
 
         void addStreamDetector(IStreamDetector *streamDetector);

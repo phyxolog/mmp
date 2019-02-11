@@ -5,10 +5,10 @@
 #include "FS.hpp"
 #include "Stream.hpp"
 
-namespace marc {
+namespace mmp {
     class IStreamDetector {
     private:
-        virtual bool validHeader(const char *, uint) = 0;
+        virtual bool validHeader(const char *, size_t) = 0;
     public:
         IStreamDetector() { }
         virtual ~IStreamDetector() { }

@@ -1,26 +1,26 @@
 #include "pch.hpp"
 #include "StreamCompressor.hpp"
 
-namespace marc {
+namespace mmp {
     namespace fs = std::experimental::filesystem;
 
-    StreamCompressor::StreamCompressor(marc::FS *filePtr, marc::FS *cFilePtr, uint bufferSize)
+    StreamCompressor::StreamCompressor(mmp::FS *filePtr, mmp::FS *cFilePtr, uint bufferSize)
         : filePtr(filePtr), cFilePtr(cFilePtr), bufferSize(bufferSize) { }
     StreamCompressor::~StreamCompressor() { }
 
     void StreamCompressor::execute(std::list<Stream> &streamList) {
-        streamList.sort([](const marc::Stream &F, const marc::Stream &S) {
+        streamList.sort([](const mmp::Stream &F, const mmp::Stream &S) {
             return F.getOffset() < S.getOffset();
         });
 
         MarcHeader Header;
-        std::memcpy(Header.signature, marc::Signature, sizeof(marc::Signature));
-        std::memcpy(Header.version, marc::Version, sizeof(marc::Version));
+        std::memcpy(Header.signature, mmp::Signature, sizeof(mmp::Signature));
+        std::memcpy(Header.version, mmp::Version, sizeof(mmp::Version));
         Header.crc32 = Utils::calculateCrc32(filePtr, 0, filePtr->getFileSize());
         Header.firstCompressedStreamOffset = -1;
 
         // Keep bytes for header
-        cFilePtr->seek(sizeof(MarcHeader), marc::fs_types::fileBegin);
+        cFilePtr->seek(sizeof(MarcHeader), mmp::fs_types::fileBegin);
 
         MarcCompressedStream compressedStream;
         std::list<MarcCompressedStream> compressedStreamList;
@@ -61,7 +61,7 @@ namespace marc {
             compressedStreamList.push_front(compressedStream);
 
             cFilePtr->seek(sizeof(MarcInternalCompressedStream), fs_types::fileCurrent);
-            marc::FS *outCompressedFile = new marc::FS(outCompressedFileName, marc::fs_types::readMode);
+            mmp::FS *outCompressedFile = new mmp::FS(outCompressedFileName, mmp::fs_types::readMode);
 
             Utils::CopyData(outCompressedFile, cFilePtr, 0, compressedStream.compressedSize);
 
@@ -116,7 +116,7 @@ namespace marc {
     void StreamCompressor::CompressStream(Stream &stream, MarcCompressedStream &compressedStream, fs::path &outputFile) {
         std::string outFileName = std::to_string(stream.getOffset())
             + "_" + std::to_string(stream.getSize())
-            + "." + marc::StreamExts[stream.getType()];
+            + "." + mmp::StreamExts[stream.getType()];
         fs::path outFile = fs::absolute(outFileName);
         Utils::extractFileFromStream(filePtr, stream.getOffset(), stream.getSize(), outFile.string());
         bool result = false;

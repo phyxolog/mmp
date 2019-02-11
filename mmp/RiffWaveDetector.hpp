@@ -7,13 +7,13 @@
 #include "Stream.hpp"
 #include "IStreamDetector.hpp"
 
-namespace marc {
+namespace mmp {
     class RiffWaveDetector : public IStreamDetector {
     private:
         const char* signature;
-        uint signatureSize;
-        marc::skiptableType skiptableType;
-        marc::occtableType occtableType;
+        size_t signatureSize;
+        mmp::skiptableType skiptableType;
+        mmp::occtableType occtableType;
 
 #pragma pack(push, 1)
         typedef struct Header {
@@ -33,7 +33,7 @@ namespace marc {
         } Header;
 #pragma pack(pop)
 
-        bool validHeader(const char *buffer, uint index) {
+        bool validHeader(const char *buffer, size_t index) {
             return std::memcmp(buffer + index, "RIFF", 4) == 0 && std::memcmp(buffer + index + 8, "WAVE", 4) == 0;
         }
 
@@ -41,13 +41,13 @@ namespace marc {
         RiffWaveDetector() {
             signature = "RIFF";
             signatureSize = std::strlen(signature);
-            skiptableType = marc::TurboBM::CreateSkipTable(signature, signatureSize);
-            occtableType = marc::TurboBM::CreateOccTable(signature, signatureSize);
+            skiptableType = mmp::TurboBM::CreateSkipTable(signature, signatureSize);
+            occtableType = mmp::TurboBM::CreateOccTable(signature, signatureSize);
         }
 
         void execute(const char *buffer, uint bufferSize, int64 currentOffset, std::list<Stream> &streamList) {
             Stream stream;
-            uint index = marc::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
+            size_t index = mmp::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
 
             while (index != -1) {
                 if (validHeader(buffer, index)) {
@@ -56,7 +56,7 @@ namespace marc {
                     streamList.push_front(stream);
                 }
 
-                index = marc::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize, index + 1);
+                index = mmp::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize, index + 1);
             }
         }
 
