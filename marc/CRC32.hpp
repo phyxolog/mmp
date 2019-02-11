@@ -1,8 +1,5 @@
 #pragma once
 
-#include "pch.h"
-#include "Types.hpp"
-
 namespace marc {
     class CRC32 {
     private:
@@ -32,11 +29,11 @@ namespace marc {
         };
 
     public:
-        static uint32_t update(uint32_t initial, const void *buffer, uint length) {
+        static uint32_t update(uint32_t initial, const void *buffer, unsigned int length) {
             uint32_t c = initial ^ 0xFFFFFFFF;
             const uint8_t* u = static_cast<const uint8_t*>(buffer);
 
-            for (uint i = 0; i < length; i++) {
+            for (unsigned int i = 0; i < length; i++) {
                 c = CRC32TABLE[(c ^ u[i]) & 0xFF] ^ (c >> 8);
             }
 

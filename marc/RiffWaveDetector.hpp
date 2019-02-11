@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 #include <list>
 
 #include "TurboBM.hpp"
@@ -48,11 +46,11 @@ namespace marc {
         }
 
         void execute(const char *buffer, uint bufferSize, int64 currentOffset, std::list<Stream> &streamList) {
+            Stream stream;
             uint index = marc::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
 
             while (index != -1) {
                 if (validHeader(buffer, index)) {
-                    Stream stream;
                     stream.setOffset(currentOffset + index);
                     stream.setType(RIFF_WAVE_TYPE);
                     streamList.push_front(stream);

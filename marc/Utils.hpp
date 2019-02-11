@@ -2,7 +2,6 @@
 
 #include <experimental/filesystem>
 
-#include "pch.h"
 #include "CRC32.hpp"
 #include "FS.hpp"
 #include "Types.hpp"
@@ -64,14 +63,46 @@ namespace marc {
             outFile->close();
         }
 
-        bool execAndWait(const fs::path &exePath) {
+        static void CopyData(marc::FS *src, marc::FS *dst, uintmax_t offset, uintmax_t size) {
+            uint bufferSize = 256 * 1024;
+            int64 readBytes = 0;
+            src->seek(offset, marc::fs_types::fileBegin);
+
+            if (size < bufferSize) {
+                bufferSize = static_cast<unsigned int>(size);
+            }
+
+            char *buffer = new char[bufferSize];
+
+            while (readBytes < size) {
+                if ((readBytes + bufferSize) > size) {
+                    bufferSize = static_cast<unsigned int>(size - readBytes);
+                }
+
+                src->read(bufferSize, buffer);
+                dst->write(bufferSize, buffer);
+
+                readBytes += bufferSize;
+            }
+
+            delete[] buffer;
+        }
+
+        static void ZeroFile(marc::FS *src, uint size) {
+            char *nulls = new char[size];
+            memset(nulls, 0, size);
+            src->write(size, nulls);
+            delete[] nulls;
+        }
+
+        static int execAndWait(const std::string &exePath, const std::string &args) {
             // For redirect stdout
             SECURITY_ATTRIBUTES SecurityAttributes;
             SecurityAttributes.nLength = sizeof(SecurityAttributes);
             SecurityAttributes.lpSecurityDescriptor = NULL;
             SecurityAttributes.bInheritHandle = TRUE;
 
-            HANDLE hFile = CreateFile(L"NUL",
+            HANDLE hFile = ::CreateFile("NUL",
                 FILE_APPEND_DATA,
                 FILE_SHARE_WRITE | FILE_SHARE_READ,
                 &SecurityAttributes,
@@ -80,7 +111,7 @@ namespace marc {
                 NULL);
 
             PROCESS_INFORMATION ProcInfo;
-            STARTUPINFO StartupInfo;
+            STARTUPINFOA StartupInfo;
 
             memset(&ProcInfo, 0, sizeof(ProcInfo));
             memset(&StartupInfo, 0, sizeof(StartupInfo));
@@ -91,16 +122,24 @@ namespace marc {
             StartupInfo.hStdInput = NULL;
             StartupInfo.hStdError = hFile;
             StartupInfo.hStdOutput = hFile;
+           
+            LPCSTR _exePath = exePath.c_str();
+            std::string sargs = exePath + " " + args;
+            LPSTR _args = (LPSTR)(sargs.c_str());
 
-            if (!CreateProcess((LPCWSTR)(exePath.u8string().c_str()), nullptr, nullptr, nullptr, false, 0,
+            if (!::CreateProcess(_exePath, _args, nullptr, nullptr, true, 0,
                 nullptr, nullptr, &StartupInfo, &ProcInfo)) {
-                return false;
+                return -1;
             }
 
-            CloseHandle(ProcInfo.hProcess);
-            CloseHandle(ProcInfo.hThread);
+            dword exitCode;
+            ::WaitForSingleObject(ProcInfo.hProcess, INFINITE);
+            ::GetExitCodeProcess(ProcInfo.hProcess, &exitCode);
 
-            return true;
+            ::CloseHandle(ProcInfo.hProcess);
+            ::CloseHandle(ProcInfo.hThread);
+
+            return exitCode;
         }
     };
 }

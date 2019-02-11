@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "pch.hpp"
 #include "FS.hpp"
 
 namespace marc {
@@ -26,7 +26,7 @@ namespace marc {
     bool FS::open(fs::path path, short int openMode, dword flag) {
         path = path;
         hFile = ::CreateFile(
-            path.c_str(),
+            path.string().c_str(),
             openMode == fs_types::readMode ? GENERIC_READ : GENERIC_WRITE | GENERIC_READ,
             FILE_SHARE_READ,
             nullptr,
@@ -46,17 +46,17 @@ namespace marc {
         return true;
     }
 
-    bool FS::seek(int64 offset, short int moveMethod) {
+    int64 FS::seek(int64 offset, short int moveMethod) {
         LARGE_INTEGER li;
         li.QuadPart = offset;
 
-        dword result = ::SetFilePointer(hFile, li.LowPart, &li.HighPart, moveMethod);
+        li.LowPart = ::SetFilePointer(hFile, li.LowPart, &li.HighPart, moveMethod);
 
-        if (result == INVALID_SET_FILE_POINTER) {
-            return false;
+        if (li.LowPart == INVALID_SET_FILE_POINTER) {
+            li.QuadPart = -1;
         }
 
-        return true;
+        return li.QuadPart;
     }
 
     bool FS::read(uint size, void *cBuffer) {
@@ -79,6 +79,10 @@ namespace marc {
         }
 
         return true;
+    }
+
+    fs::path FS::getAbsolutePath() {
+        return fs::absolute(path);
     }
 
     void FS::close() {

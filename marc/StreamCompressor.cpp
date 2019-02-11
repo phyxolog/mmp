@@ -1,76 +1,188 @@
-#include "pch.h"
+#include "pch.hpp"
 #include "StreamCompressor.hpp"
 
 namespace marc {
     namespace fs = std::experimental::filesystem;
 
-    StreamCompressor::StreamCompressor(marc::FS *filePtr, uint bufferSize) : filePtr(filePtr), bufferSize(bufferSize) { }
+    StreamCompressor::StreamCompressor(marc::FS *filePtr, marc::FS *cFilePtr, uint bufferSize)
+        : filePtr(filePtr), cFilePtr(cFilePtr), bufferSize(bufferSize) { }
     StreamCompressor::~StreamCompressor() { }
 
     void StreamCompressor::execute(std::list<Stream> &streamList) {
-        fs::path outDir = "./~tmp";
-        fs::create_directory(outDir);
-
-        fs::path path("D:\\Projects\\marc\\Debug\\stored-packed.mcf");
-        marc::FS *cFilePtr = new marc::FS(path, marc::fs_types::writeMode);
-
         streamList.sort([](const marc::Stream &F, const marc::Stream &S) {
             return F.getOffset() < S.getOffset();
         });
 
         MarcHeader Header;
-        std::memcpy(Header.Signature, marcSignature, sizeof(marcSignature));
-        std::memcpy(Header.Version, marcVersion, sizeof(marcVersion));
-        Header.OriginalSize = filePtr->getFileSize();
-        Header.OriginalCRC32 = Utils::calculateCrc32(filePtr, 0, filePtr->getFileSize());
-        Header.FirstCompressedStreamOffset = -1;
+        std::memcpy(Header.signature, marc::Signature, sizeof(marc::Signature));
+        std::memcpy(Header.version, marc::Version, sizeof(marc::Version));
+        Header.crc32 = Utils::calculateCrc32(filePtr, 0, filePtr->getFileSize());
+        Header.firstCompressedStreamOffset = -1;
 
         // Keep bytes for header
         cFilePtr->seek(sizeof(MarcHeader), marc::fs_types::fileBegin);
 
+        MarcCompressedStream compressedStream;
+        std::list<MarcCompressedStream> compressedStreamList;
+        int64 prevOffset = 0, savedBytes = 0, fileSize = filePtr->getFileSize();
+
+        // TODO: Filter by type
+        // TOOD: Choose compressor
+        // TODO: Universal compressor
+        // TODO: Choose level
         for (auto stream : streamList) {
-            std::string fileName = std::to_string(stream.getOffset()) + ".wav";
-            fs::path outPath = outDir / fileName;
-            Utils::extractFileFromStream(filePtr, stream.getOffset(), stream.getSize(), outPath.u8string());
-            // TakCompress(outPath, outPath.replace_extension(".tak"), 9);
+            // Write non-compressed data
+            if (stream.getOffset() > prevOffset) {
+                Utils::CopyData(
+                    filePtr,
+                    cFilePtr,
+                    prevOffset,
+                    stream.getOffset() - prevOffset
+                );
+            }
+
+            fs::path outCompressedFileName;
+            CompressStream(stream, compressedStream, outCompressedFileName);
+
+            if (compressedStream.compressedSize >= stream.getSize()) {
+                Utils::CopyData(filePtr, cFilePtr, stream.getOffset(), stream.getSize());
+                continue;
+            }
+
+            std::cout << "c_Tak: " << stream.getSize() << " --> " << compressedStream.compressedSize << std::endl;
+
+            compressedStream.type = stream.getType();
+            compressedStream.compressedOffset = cFilePtr->seek(0, fs_types::fileCurrent);
+            compressedStream.originalOffset = stream.getOffset();
+            compressedStream.originalSize = stream.getSize();
+            compressedStream.originalCRC32 =
+                Utils::calculateCrc32(filePtr, stream.getOffset(), stream.getSize());
+
+            compressedStreamList.push_front(compressedStream);
+
+            cFilePtr->seek(sizeof(MarcInternalCompressedStream), fs_types::fileCurrent);
+            marc::FS *outCompressedFile = new marc::FS(outCompressedFileName, marc::fs_types::readMode);
+
+            Utils::CopyData(outCompressedFile, cFilePtr, 0, compressedStream.compressedSize);
+
+            outCompressedFile->close();
+            fs::remove(outCompressedFileName);
+
+            savedBytes += stream.getSize() - compressedStream.compressedSize;
+            prevOffset = stream.getOffset() + stream.getSize();
         }
 
-        // TODO
-        /*uint firstOffset = (uint)streamList.front().getOffset();
-        if (firstOffset > 0) {
-            // TODO: Rewrite (make chunk read)
-            std::cout << firstOffset << std::endl;
+        for (auto streamIterator = compressedStreamList.rbegin(); streamIterator != compressedStreamList.rend(); streamIterator++) {
+            MarcInternalCompressedStream internalCompresseedStream;
+            internalCompresseedStream.compressedSize = streamIterator->compressedSize;
+            internalCompresseedStream.compressor = streamIterator->compressor;
+            internalCompresseedStream.originalCRC32 = streamIterator->originalCRC32;
+            internalCompresseedStream.originalOffset = streamIterator->originalOffset;
+            internalCompresseedStream.type = streamIterator->type;
 
-            char *buffer = new char[firstOffset];
-            filePtr->seek(0, marc::fs_types::fileBegin);
-            filePtr->read(firstOffset, buffer);
-            cFilePtr->write(firstOffset, buffer);
-        }*/
+            auto nextStreamIterator = std::next(streamIterator, 1);
+            if (nextStreamIterator != compressedStreamList.rend()) {
+                internalCompresseedStream.nextCompressedStreamOffset = nextStreamIterator->compressedOffset;
+            } else {
+                internalCompresseedStream.nextCompressedStreamOffset = -1;
+            }
 
-        cFilePtr->close();
-       // fs::remove(outDir);
+            cFilePtr->seek(streamIterator->compressedOffset, fs_types::fileBegin);
+            cFilePtr->write(sizeof(MarcInternalCompressedStream), &(*streamIterator));
+        }
 
-        /*for (auto stream : streamList) {
-            std::cout << "Stream: " << stream.getType()
-                << ", Size: " << stream.getSize()
-                << ", Offset: " << stream.getOffset()
-                << std::endl;
-        }*/
+        // Write other non-compressed data
+        if (prevOffset < fileSize) {
+            Utils::CopyData(
+                filePtr,
+                cFilePtr,
+                prevOffset,
+                fileSize - prevOffset
+            );
+        }
+
+        // If we compress some data,
+        // we need set pointer to first compressed stream
+        if (savedBytes != 0) {
+            Header.firstCompressedStreamOffset =
+                sizeof(MarcHeader) + streamList.front().getOffset();
+        }
+
+        // Write header
+        cFilePtr->seek(0, fs_types::fileBegin);
+        cFilePtr->write(sizeof(MarcHeader), &Header);
     }
 
-    /*bool StreamCompressor::WavpackCompress(fs::path inputFile, fs::path outputFile, unsigned short level) {
-#if _WIN64
-        bp::child process(bp::search_path("packers/wavpack_x64.exe"), "-h", inputFile, outputFile);
-#else
-        bp::child process(bp::search_path("packers/wavpack_x32.exe"), "-h", inputFile, outputFile);
-#endif
-        return process.exit_code() == 0;
+    void StreamCompressor::CompressStream(Stream &stream, MarcCompressedStream &compressedStream, fs::path &outputFile) {
+        std::string outFileName = std::to_string(stream.getOffset())
+            + "_" + std::to_string(stream.getSize())
+            + "." + marc::StreamExts[stream.getType()];
+        fs::path outFile = fs::absolute(outFileName);
+        Utils::extractFileFromStream(filePtr, stream.getOffset(), stream.getSize(), outFile.string());
+        bool result = false;
+
+        switch (stream.getType()) {
+        case RIFF_WAVE_TYPE:
+            result = TakCompress(outFile, outputFile, 9);
+            break;
+        default:
+            break;
+        }
+
+        if (result) {
+            compressedStream.compressedSize = fs::file_size(outputFile);
+        } else {
+            compressedStream.compressedSize = stream.getSize();
+        }
+
+        fs::remove(outFile);
     }
 
-    bool StreamCompressor::TakCompress(fs::path inputFile, fs::path outputFile, unsigned short level) {
-        bp::ipstream Pipe;
-        bp::child process(bp::search_path("packers/tak.exe"), "-e", "-overwrite", "-wm0", "-tn4", "-p4m", inputFile, outputFile);
-        process.wait();
-        return process.exit_code() == 0;
-    }*/
+    bool StreamCompressor::TakCompress(fs::path inputFile, fs::path &outputFile, unsigned short level) {
+        std::string _level = "";
+        outputFile = fs::path(inputFile).replace_extension(".tak");
+
+        switch (level)
+        {
+        case 1:
+            _level = "-p0";
+            break;
+        case 2:
+            _level = "-p1";
+            break;
+        case 3:
+            _level = "-p1m";
+            break;
+        case 4:
+            _level = "-p2";
+            break;
+        case 5:
+            _level = "-p2m";
+            break;
+        case 6:
+            _level = "-p3";
+            break;
+        case 7:
+            _level = "-p3m";
+            break;
+        case 8:
+            _level = "-p4";
+            break;
+        case 9:
+            _level = "-p4m";
+            break;
+        default:
+            return false;
+        }
+
+        std::stringstream args;
+        args
+            << "-e -overwrite -wm0 -tn4 "
+            << _level << " "
+            << "\"" << inputFile.string() << "\" "
+            << "\"" << outputFile.string() << "\"";
+
+        int result = Utils::execAndWait(fs::absolute(fs::path("packers/tak.exe")).string(), args.str());
+        return result == 0;
+    }
 }

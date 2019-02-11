@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pch.h"
 #include "Types.hpp"
 
 namespace marc {
@@ -8,7 +7,7 @@ namespace marc {
     private:
         int64 size = 0;
         int64 offset = 0;
-        Type type = 0;
+        StreamType type = 0;
 
     public:
         void setSize(int64 _size) {
@@ -19,7 +18,7 @@ namespace marc {
             offset = _offset;
         }
 
-        void setType(Type _type) {
+        void setType(StreamType _type) {
             type = _type;
         }
 
@@ -31,7 +30,7 @@ namespace marc {
             return size;
         }
 
-        Type getType() const {
+        StreamType getType() const {
             return type;
         }
     };

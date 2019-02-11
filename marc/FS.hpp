@@ -2,7 +2,6 @@
 
 #include <experimental/filesystem>
 
-#include "pch.h"
 #include "Types.hpp"
 
 namespace marc {
@@ -26,9 +25,10 @@ namespace marc {
         FS(fs::path path, short int openMode = fs_types::readMode, dword flag = fs_types::Normal);
         int64 getFileSize();
         bool open(fs::path path, short int openMode, dword flag);
-        bool seek(int64 offset, short int moveMethod = fs_types::fileBegin);
+        int64 seek(int64 offset, short int moveMethod = fs_types::fileBegin);
         bool read(uint size, void *cBuffer);
         bool write(uint size, void *cBuffer);
+        fs::path getAbsolutePath();
         void close();
     };
 }
