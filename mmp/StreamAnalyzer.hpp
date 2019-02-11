@@ -3,6 +3,7 @@
 #include <list>
 #include <iterator>
 #include <algorithm>
+#include <functional>
 
 #include "FS.hpp"
 #include "Types.hpp"

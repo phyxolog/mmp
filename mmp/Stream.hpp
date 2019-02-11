@@ -8,6 +8,7 @@ namespace mmp {
         int64 size = 0;
         int64 offset = 0;
         StreamType type = 0;
+        StreamStringType stringType = "";
 
     public:
         void setSize(int64 _size) {
@@ -22,6 +23,10 @@ namespace mmp {
             type = _type;
         }
 
+        void setStringType(StreamStringType _stringType) {
+            stringType = _stringType;
+        }
+
         int64 getOffset() const {
             return offset;
         }
@@ -32,6 +37,10 @@ namespace mmp {
 
         StreamType getType() const {
             return type;
+        }
+
+        StreamStringType getStringType() const {
+            return stringType;
         }
     };
 }

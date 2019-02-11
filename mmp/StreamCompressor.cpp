@@ -33,12 +33,7 @@ namespace mmp {
         for (auto stream : streamList) {
             // Write non-compressed data
             if (stream.getOffset() > prevOffset) {
-                Utils::CopyData(
-                    filePtr,
-                    cFilePtr,
-                    prevOffset,
-                    stream.getOffset() - prevOffset
-                );
+                Utils::CopyData(filePtr, cFilePtr, prevOffset, stream.getOffset() - prevOffset);
             }
 
             fs::path outCompressedFileName;
@@ -93,19 +88,13 @@ namespace mmp {
 
         // Write other non-compressed data
         if (prevOffset < fileSize) {
-            Utils::CopyData(
-                filePtr,
-                cFilePtr,
-                prevOffset,
-                fileSize - prevOffset
-            );
+            Utils::CopyData(filePtr, cFilePtr, prevOffset, fileSize - prevOffset);
         }
 
         // If we compress some data,
         // we need set pointer to first compressed stream
         if (savedBytes != 0) {
-            Header.firstCompressedStreamOffset =
-                sizeof(MarcHeader) + streamList.front().getOffset();
+            Header.firstCompressedStreamOffset = sizeof(MarcHeader) + streamList.front().getOffset();
         }
 
         // Write header

@@ -1,19 +1,27 @@
 #pragma once
 
+#include <boost/program_options.hpp>
+#include <boost/format.hpp>
+
 #include <experimental/filesystem>
 #include <list>
 
+#include "IStreamDetector.hpp"
+#include "Utils.hpp"
 #include "StreamAnalyzer.hpp"
 #include "RiffWaveDetector.hpp"
 #include "StreamCompressor.hpp"
 
-#define DEFAULT_BUFFER_SIZE 1 * 1024 * 1024
+#define BUFFER_SIZE       1 * 1024 * 1024
+#define COMMAND_SCAN      "s"
+#define COMMAND_COMPRESS  "c"
+#define COMMAND_EXTRACT   "e"
 
 static const std::string logo =
-    "----------------------------------------------------------\n"
-    "|                 [M]ulti[M]edia [P]acker                |\n"
+    "---------------------------------------------------------\n"
+    "|                 [M]ulti[M]edia [P]acker               |\n"
     "|             https://github.com/phyxolog/mmp           |\n"
-    "----------------------------------------------------------\n";
+    "---------------------------------------------------------\n";
 
 static const std::string usageMessage =
     "Usage:\n"

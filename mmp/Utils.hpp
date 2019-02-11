@@ -1,6 +1,11 @@
 #pragma once
 
+#include <boost/format.hpp>
+
 #include <experimental/filesystem>
+#include <map>
+#include <algorithm>
+#include <chrono>
 
 #include "CRC32.hpp"
 #include "FS.hpp"
@@ -11,6 +16,59 @@ namespace mmp {
 
     class Utils {
     public:
+        static std::string humanizeSize(uintmax_t Bytes) {
+            if (Bytes == 0) return "0 B";
+            int exp = static_cast<int>(log(Bytes) / log(1024));
+            std::string prefix = std::string("BKMGTPE").substr(static_cast<unsigned long>(exp), 1) + (exp == 0 ? "" : "b");
+            return boost::str(boost::format("%.2f %s") % (Bytes / pow(1024, exp)) % prefix);
+        }
+
+        static std::string generateUniqueFolderName(std::string firstPrefix, std::string secondPrefix) {
+            return std::string(firstPrefix + "_" + secondPrefix + "_" + std::to_string(std::chrono::seconds(std::time(nullptr)).count()));
+        }
+
+        static long long memToll(std::string str) {
+            if (str.length() == 0) {
+                return 0;
+            }
+
+            size_t nondigit_pos = str.find_first_not_of("0123456789");
+
+            if (nondigit_pos == std::string::npos) {
+                return std::stoll(str);
+            }
+
+            long long result = 0;
+            std::string digits = str.substr(0, nondigit_pos);
+            std::string u = str.substr(nondigit_pos, str.length());
+            std::transform(u.begin(), u.end(), u.begin(), ::tolower);
+
+            if (digits.length() == 0) {
+                return result;
+            }
+            else {
+                result = std::stoll(digits);
+            }
+
+            std::map<std::string, long> umul = {
+                { "b",  1                   },
+                { "k",  1000                },
+                { "kb", 1024                },
+                { "m",  1000 * 1000        },
+                { "mb", 1024 * 1024        },
+                { "g",  1000L * 1000 * 1000 },
+                { "gb", 1024L * 1024 * 1024 },
+            };
+
+            auto mul = umul.find(u);
+            if (mul != umul.end()) {
+                return result * mul->second;
+            }
+            else {
+                return result;
+            }
+        }
+
         static uint32_t calculateCrc32(mmp::FS *filePtr, int64 offset, int64 size) {
             uint bufferSize = 16 * 1024 * 1024;
             int64 readBytes = 0;

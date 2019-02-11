@@ -1,52 +1,36 @@
 #pragma once
 
+#include <experimental/filesystem>
 #include <cstdint>
+#include <string>
 
 namespace mmp {
+    namespace fs = std::experimental::filesystem;
+
     typedef uintmax_t int64;
     typedef unsigned int uint;
     typedef unsigned long dword;
     typedef void* handle;
     typedef short int StreamType;
     typedef short int CompressorType;
+    typedef std::string StreamStringType;
 
-    const std::string StreamExts[] = { "wav" };
+    const StreamStringType StreamTypes[] = { "RIFF WAVE" };
+    const std::string      StreamExts[] = { "wav" };
 
     const char Signature[3] = { 'M', 'C', 'F' };
     const char Version[3] = { '0', '0', '1' };
 
-#pragma pack(push, 1)
-    typedef struct MarcHeader {
-        char signature[3];
-        char version[3];
-        uint32_t crc32;
-        int64 firstCompressedStreamOffset;
-    } MarcHeader;
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-    typedef struct MarcCompressedStream {
-        StreamType type;
-        CompressorType compressor;
-        int64 nextCompressedStreamOffset;
-        int64 compressedOffset;
-        int64 compressedSize;
-        int64 originalOffset;
-        int64 originalSize;
-        uint32_t originalCRC32;
-    } MarcCompressedStream;
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-    typedef struct MarcInternalCompressedStream {
-        StreamType type;
-        CompressorType compressor;
-        int64 nextCompressedStreamOffset;
-        int64 compressedSize;
-        int64 originalOffset;
-        uint32_t originalCRC32;
-    } MarcInternalCompressedStream;
-#pragma pack(pop)
+    typedef struct CLIOptions {
+        fs::path outDir;
+        std::string command;
+        fs::path inFile;
+        fs::path outFile;
+        uint bufferSize;
+        bool verbose;
+        bool enableRiffWaveAnalyze;
+        unsigned short takCompLevel;
+    } CLIOptions;
 
     enum { RIFF_WAVE_TYPE = 0 };
 }

@@ -53,6 +53,7 @@ namespace mmp {
                 if (validHeader(buffer, index)) {
                     stream.setOffset(currentOffset + index);
                     stream.setType(RIFF_WAVE_TYPE);
+                    stream.setStringType(mmp::StreamTypes[RIFF_WAVE_TYPE]);
                     streamList.push_front(stream);
                 }
 
@@ -70,6 +71,10 @@ namespace mmp {
                 stream->setSize(header->ChunkSize + 8);
 
                 // TODO: Analyze stream on compressible/validable
+
+                if (callback) {
+                    (*callback)(*stream);
+                }
             }
         }
     };
