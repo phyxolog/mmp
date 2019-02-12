@@ -3,8 +3,7 @@
 #include <list>
 
 #include "TurboBM.hpp"
-#include "Types.hpp"
-#include "Stream.hpp"
+#include "RiffWaveStream.hpp"
 #include "IStreamDetector.hpp"
 
 namespace mmp {
@@ -41,41 +40,39 @@ namespace mmp {
         RiffWaveDetector() {
             signature = "RIFF";
             signatureSize = std::strlen(signature);
-            skiptableType = mmp::TurboBM::CreateSkipTable(signature, signatureSize);
-            occtableType = mmp::TurboBM::CreateOccTable(signature, signatureSize);
+            skiptableType = mmp::TurboBM::createSkipTable(signature, signatureSize);
+            occtableType = mmp::TurboBM::createOccTable(signature, signatureSize);
         }
 
-        void execute(const char *buffer, uint bufferSize, int64 currentOffset, std::list<Stream> &streamList) {
-            Stream stream;
-            size_t index = mmp::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
+        void execute(const char *buffer, unsigned int bufferSize, uintmax_t currentOffset, std::list<BaseStream*> &streamList) {
+            size_t index = mmp::TurboBM::search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize);
 
             while (index != -1) {
                 if (validHeader(buffer, index)) {
-                    stream.setOffset(currentOffset + index);
-                    stream.setType(RIFF_WAVE_TYPE);
-                    stream.setStringType(mmp::StreamTypes[RIFF_WAVE_TYPE]);
+                    RiffWaveStream *stream = new RiffWaveStream();
+                    stream->setOffset(currentOffset + index);
                     streamList.push_front(stream);
                 }
 
-                index = mmp::TurboBM::Search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize, index + 1);
+                index = mmp::TurboBM::search(buffer, bufferSize, occtableType, skiptableType, signature, signatureSize, index + 1);
             }
         }
 
-        void analyze(FS* filePtr, std::list<Stream> &streamList) {
+        void analyze(FileStream* filePtr, std::list<BaseStream*> &streamList) {
             Header *header = new Header;
 
             for (auto stream = streamList.rbegin(); stream != streamList.rend(); stream++) {
-                filePtr->seek(stream->getOffset());
+                filePtr->seek((*stream)->getOffset());
                 filePtr->read(sizeof(Header), header);
                 
-                stream->setSize(header->ChunkSize + 8);
+                (*stream)->setSize(header->ChunkSize + 8);
+
+                std::cout << header->ChunkSize + 8 << std::endl;
 
                 // TODO: Analyze stream on compressible/validable
-
-                if (callback) {
-                    (*callback)(*stream);
-                }
             }
+
+            delete header;
         }
     };
 }

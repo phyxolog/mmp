@@ -10,7 +10,7 @@ namespace mmp {
         return result;
     }
 
-    const skiptableType TurboBM::CreateSkipTable(const char* needle, size_t needle_length) {
+    const skiptableType TurboBM::createSkipTable(const char* needle, size_t needle_length) {
         skiptableType skip(needle_length, needle_length);
 
         if (needle_length <= 1) {
@@ -64,7 +64,7 @@ namespace mmp {
         return skip;
     }
 
-    const occtableType TurboBM::CreateOccTable(const char* needle, size_t needle_length) {
+    const occtableType TurboBM::createOccTable(const char* needle, size_t needle_length) {
         occtableType occ(UCHAR_MAX + 1, needle_length);
 
         if (needle_length >= 1) {
@@ -76,7 +76,7 @@ namespace mmp {
         return occ;
     }
 
-    size_t TurboBM::Search(const char* haystack, size_t haystack_length,
+    size_t TurboBM::search(const char* haystack, size_t haystack_length,
         const occtableType& occ,
         const skiptableType& skip,
         const char* needle,

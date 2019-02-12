@@ -4,13 +4,12 @@
 #include <list>
 #include <sstream>
 
-#include "Stream.hpp"
-#include "FS.hpp"
-#include "Types.hpp"
+#include "BaseStream.hpp"
+#include "FileStream.hpp"
 #include "Utils.hpp"
 
 namespace mmp {
-    typedef struct MarcCompressedStream {
+    /*typedef struct MarcCompressedStream {
         StreamType type;
         CompressorType compressor;
         int64 nextCompressedStreamOffset;
@@ -39,20 +38,20 @@ namespace mmp {
         int64 originalOffset;
         uint32_t originalCRC32;
     } MarcInternalCompressedStream;
-#pragma pack(pop)
+#pragma pack(pop)*/
 
     class StreamCompressor {
     private:
-        uint bufferSize;
-        mmp::FS *filePtr, *cFilePtr;
+        unsigned int bufferSize;
+        mmp::FileStream *filePtr, *cFilePtr;
 
-        void CompressStream(Stream&, MarcCompressedStream&, fs::path&);
+        //void CompressStream(BaseStream&, MarcCompressedStream&, fs::path&);
         bool TakCompress(fs::path, fs::path&, unsigned short);
 
     public:
-        StreamCompressor(mmp::FS *filePtr, mmp::FS *cFilePtr, uint bufferSize);
+        StreamCompressor(mmp::FileStream *filePtr, mmp::FileStream *cFilePtr, unsigned int bufferSize);
         ~StreamCompressor();
 
-        void execute(std::list<Stream>&);
+        void execute(std::list<BaseStream>&);
     };
 }

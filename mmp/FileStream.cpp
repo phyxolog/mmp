@@ -1,17 +1,17 @@
 #include "pch.hpp"
-#include "FS.hpp"
+#include "FileStream.hpp"
 
 namespace mmp {
-    FS::FS() { }
-    FS::FS(fs::path path, short int openMode, dword flag) : path(path) {
+    FileStream::FileStream() { }
+    FileStream::FileStream(fs::path path, short int openMode, DWORD flag) : path(path) {
         open(path, openMode, flag);
     }
 
-    int64 FS::getFileSize() {
+    uintmax_t FileStream::getFileSize() {
         return fs::file_size(path);
     }
 
-    dword FS::getFileFlag(dword flag) const {
+    DWORD FileStream::getFileFlag(DWORD flag) const {
         switch (flag)
         {
             case fs_types::Normal:         flag = FILE_ATTRIBUTE_NORMAL;     break;
@@ -23,7 +23,7 @@ namespace mmp {
         return flag;
     }
 
-    bool FS::open(fs::path path, short int openMode, dword flag) {
+    bool FileStream::open(fs::path path, short int openMode, DWORD flag) {
         path = path;
         hFile = ::CreateFile(
             path.string().c_str(),
@@ -46,7 +46,7 @@ namespace mmp {
         return true;
     }
 
-    int64 FS::seek(int64 offset, short int moveMethod) {
+    uintmax_t FileStream::seek(uintmax_t offset, short int moveMethod) {
         LARGE_INTEGER li;
         li.QuadPart = offset;
 
@@ -59,7 +59,7 @@ namespace mmp {
         return li.QuadPart;
     }
 
-    bool FS::read(uint size, void *cBuffer) {
+    bool FileStream::read(unsigned int size, void *cBuffer) {
         DWORD numberOfBytesRead;
 
         bool result = ::ReadFile(hFile, cBuffer, size, &numberOfBytesRead, nullptr);
@@ -70,7 +70,7 @@ namespace mmp {
         return true;
     }
 
-    bool FS::write(uint size, void *cBuffer) {
+    bool FileStream::write(unsigned int size, void *cBuffer) {
         DWORD numberOfBytesWritten;
 
         bool result = ::WriteFile(hFile, cBuffer, size, &numberOfBytesWritten, nullptr);
@@ -81,11 +81,11 @@ namespace mmp {
         return true;
     }
 
-    fs::path FS::getAbsolutePath() {
+    fs::path FileStream::getAbsolutePath() {
         return fs::absolute(path);
     }
 
-    void FS::close() {
+    void FileStream::close() {
         if (hFile) {
             ::CloseHandle(hFile);
         }

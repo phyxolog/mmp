@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{24E3FE5E-B1B0-47C8-A579-DE14334E9CC3}</ProjectGuid>
+    <ProjectGuid>{6755361C-79AE-4AF8-B650-EAA15C83CB31}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>mmp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -77,8 +77,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\opt\include\boost-1_68;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\opt\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -109,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,22 +153,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CRC32.hpp" />
-    <ClInclude Include="FS.hpp" />
-    <ClInclude Include="mmp.hpp" />
-    <ClInclude Include="Stream.hpp" />
+    <ClInclude Include="Crc32.hpp" />
+    <ClInclude Include="FileStream.hpp" />
+    <ClInclude Include="BaseStream.hpp" />
     <ClInclude Include="IStreamDetector.hpp" />
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="RiffWaveDetector.hpp" />
+    <ClInclude Include="RiffWaveStream.hpp" />
+    <ClInclude Include="State.hpp" />
     <ClInclude Include="StreamAnalyzer.hpp" />
     <ClInclude Include="StreamCompressor.hpp" />
     <ClInclude Include="TurboBM.hpp" />
-    <ClInclude Include="Types.hpp" />
     <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FS.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="FileStream.cpp" />
+    <ClCompile Include="mmp.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -180,10 +178,6 @@
     <ClCompile Include="StreamAnalyzer.cpp" />
     <ClCompile Include="StreamCompressor.cpp" />
     <ClCompile Include="TurboBM.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\.gitattributes" />
-    <None Include="..\.gitignore" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

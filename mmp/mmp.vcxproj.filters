@@ -14,58 +14,20 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Header Files\detectors">
-      <UniqueIdentifier>{f07b8059-aa4f-4132-a748-328aba2ebc97}</UniqueIdentifier>
+      <UniqueIdentifier>{bc906fe9-1389-422a-82cd-d5928382c19a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\detectors\interface">
-      <UniqueIdentifier>{12ac77d2-cd9e-4b6a-ab8d-8fb0a71a3164}</UniqueIdentifier>
+      <UniqueIdentifier>{0e0b1497-580b-489c-971f-797a6ce76a67}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FS.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TurboBM.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StreamAnalyzer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Types.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IStreamDetector.hpp">
-      <Filter>Header Files\detectors\interface</Filter>
-    </ClInclude>
-    <ClInclude Include="RiffWaveDetector.hpp">
-      <Filter>Header Files\detectors</Filter>
-    </ClInclude>
-    <ClInclude Include="Stream.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StreamCompressor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CRC32.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mmp.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Filter Include="Header Files\streams">
+      <UniqueIdentifier>{8db9e991-dbe0-4b14-911e-4ce394e8adb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="mmp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TurboBM.cpp">
@@ -77,9 +39,46 @@
     <ClCompile Include="StreamCompressor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\.gitignore" />
-    <None Include="..\.gitattributes" />
+    <ClInclude Include="pch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Crc32.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="State.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TurboBM.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IStreamDetector.hpp">
+      <Filter>Header Files\detectors\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseStream.hpp">
+      <Filter>Header Files\streams</Filter>
+    </ClInclude>
+    <ClInclude Include="RiffWaveStream.hpp">
+      <Filter>Header Files\streams</Filter>
+    </ClInclude>
+    <ClInclude Include="RiffWaveDetector.hpp">
+      <Filter>Header Files\detectors</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamAnalyzer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamCompressor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileStream.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

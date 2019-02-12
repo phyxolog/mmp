@@ -2,14 +2,15 @@
 
 #include <boost/format.hpp>
 
+#include <Windows.h>
 #include <experimental/filesystem>
 #include <map>
 #include <algorithm>
 #include <chrono>
+#include <sstream>
 
-#include "CRC32.hpp"
-#include "FS.hpp"
-#include "Types.hpp"
+#include "Crc32.hpp"
+#include "FileStream.hpp"
 
 namespace mmp {
     namespace fs = std::experimental::filesystem;
@@ -24,7 +25,10 @@ namespace mmp {
         }
 
         static std::string generateUniqueFolderName(std::string firstPrefix, std::string secondPrefix) {
-            return std::string(firstPrefix + "_" + secondPrefix + "_" + std::to_string(std::chrono::seconds(std::time(nullptr)).count()));
+            long long now = std::chrono::seconds(std::time(nullptr)).count();
+            std::stringstream ss;
+            ss << firstPrefix << "_" << secondPrefix << "_" << now;
+            return ss.str();
         }
 
         static long long memToll(std::string str) {
@@ -69,13 +73,13 @@ namespace mmp {
             }
         }
 
-        static uint32_t calculateCrc32(mmp::FS *filePtr, int64 offset, int64 size) {
-            uint bufferSize = 16 * 1024 * 1024;
-            int64 readBytes = 0;
+        static uint32_t calculateCrc32(mmp::FileStream *filePtr, uintmax_t offset, uintmax_t size) {
+            unsigned int bufferSize = 16 * 1024 * 1024;
+            uintmax_t readBytes = 0;
             filePtr->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
-                bufferSize = static_cast<uint>(size);
+                bufferSize = static_cast<unsigned int>(size);
             }
 
             char *buffer = new char[bufferSize];
@@ -87,7 +91,7 @@ namespace mmp {
                 }
 
                 filePtr->read(bufferSize, buffer);
-                crc32 = CRC32::update(crc32, buffer, bufferSize);
+                crc32 = Crc32::update(crc32, buffer, bufferSize);
 
                 readBytes += bufferSize;
             }
@@ -95,17 +99,17 @@ namespace mmp {
             return crc32;
         }
 
-        static void extractFileFromStream(mmp::FS *filePtr, int64 offset, int64 size, std::string outFileName) {
-            uint bufferSize = 256 * 1024;
+        static void extractFileFromStream(mmp::FileStream *filePtr, uintmax_t offset, uintmax_t size, std::string outFileName) {
+            unsigned int bufferSize = 256 * 1024;
             filePtr->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
                 bufferSize = static_cast<unsigned int>(size);
             }
 
-            int64 readBytes = 0;
+            uintmax_t readBytes = 0;
             char *buffer = new char[bufferSize];
-            mmp::FS *outFile = new mmp::FS(outFileName, mmp::fs_types::writeMode);
+            mmp::FileStream *outFile = new mmp::FileStream(outFileName, mmp::fs_types::writeMode);
 
             while (readBytes < size) {
                 if ((readBytes + bufferSize) > size) {
@@ -121,9 +125,9 @@ namespace mmp {
             outFile->close();
         }
 
-        static void CopyData(mmp::FS *src, mmp::FS *dst, uintmax_t offset, uintmax_t size) {
-            uint bufferSize = 256 * 1024;
-            int64 readBytes = 0;
+        static void copyData(mmp::FileStream *src, mmp::FileStream *dst, uintmax_t offset, uintmax_t size) {
+            unsigned int bufferSize = 256 * 1024;
+            uintmax_t readBytes = 0;
             src->seek(offset, mmp::fs_types::fileBegin);
 
             if (size < bufferSize) {
@@ -144,13 +148,6 @@ namespace mmp {
             }
 
             delete[] buffer;
-        }
-
-        static void ZeroFile(mmp::FS *src, uint size) {
-            char *nulls = new char[size];
-            memset(nulls, 0, size);
-            src->write(size, nulls);
-            delete[] nulls;
         }
 
         static int execAndWait(const std::string &exePath, const std::string &args) {
@@ -190,7 +187,7 @@ namespace mmp {
                 return -1;
             }
 
-            dword exitCode;
+            DWORD exitCode;
             ::WaitForSingleObject(ProcInfo.hProcess, INFINITE);
             ::GetExitCodeProcess(ProcInfo.hProcess, &exitCode);
 

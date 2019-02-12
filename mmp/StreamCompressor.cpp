@@ -4,12 +4,12 @@
 namespace mmp {
     namespace fs = std::experimental::filesystem;
 
-    StreamCompressor::StreamCompressor(mmp::FS *filePtr, mmp::FS *cFilePtr, uint bufferSize)
+    StreamCompressor::StreamCompressor(mmp::FileStream *filePtr, mmp::FileStream *cFilePtr, unsigned int bufferSize)
         : filePtr(filePtr), cFilePtr(cFilePtr), bufferSize(bufferSize) { }
     StreamCompressor::~StreamCompressor() { }
 
-    void StreamCompressor::execute(std::list<Stream> &streamList) {
-        streamList.sort([](const mmp::Stream &F, const mmp::Stream &S) {
+    void StreamCompressor::execute(std::list<BaseStream> &streamList) {
+        /*streamList.sort([](const BaseStream &F, const BaseStream &S) {
             return F.getOffset() < S.getOffset();
         });
 
@@ -56,7 +56,7 @@ namespace mmp {
             compressedStreamList.push_front(compressedStream);
 
             cFilePtr->seek(sizeof(MarcInternalCompressedStream), fs_types::fileCurrent);
-            mmp::FS *outCompressedFile = new mmp::FS(outCompressedFileName, mmp::fs_types::readMode);
+            mmp::FileStream *outCompressedFile = new mmp::FileStream(outCompressedFileName, mmp::fs_types::readMode);
 
             Utils::CopyData(outCompressedFile, cFilePtr, 0, compressedStream.compressedSize);
 
@@ -99,10 +99,10 @@ namespace mmp {
 
         // Write header
         cFilePtr->seek(0, fs_types::fileBegin);
-        cFilePtr->write(sizeof(MarcHeader), &Header);
+        cFilePtr->write(sizeof(MarcHeader), &Header);*/
     }
 
-    void StreamCompressor::CompressStream(Stream &stream, MarcCompressedStream &compressedStream, fs::path &outputFile) {
+    /*void StreamCompressor::CompressStream(BaseStream &stream, MarcCompressedStream &compressedStream, fs::path &outputFile) {
         std::string outFileName = std::to_string(stream.getOffset())
             + "_" + std::to_string(stream.getSize())
             + "." + mmp::StreamExts[stream.getType()];
@@ -125,7 +125,7 @@ namespace mmp {
         }
 
         fs::remove(outFile);
-    }
+    }*/
 
     bool StreamCompressor::TakCompress(fs::path inputFile, fs::path &outputFile, unsigned short level) {
         std::string _level = "";

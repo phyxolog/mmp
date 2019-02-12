@@ -2,7 +2,8 @@
 #include "StreamAnalyzer.hpp"
 
 namespace mmp {
-    StreamAnalyzer::StreamAnalyzer(mmp::FS *filePtr, uint bufferSize) : filePtr(filePtr), bufferSize(bufferSize) { }
+    StreamAnalyzer::StreamAnalyzer(mmp::FileStream *filePtr, unsigned int bufferSize)
+        : filePtr(filePtr), bufferSize(bufferSize) { }
     StreamAnalyzer::~StreamAnalyzer() { }
 
     void StreamAnalyzer::addStreamDetector(IStreamDetector *streamDetector) {
@@ -14,10 +15,10 @@ namespace mmp {
             throw std::exception("Empty stream detector list!");
         }
 
-        std::list<Stream> localStreamList;
-        int64 fileSize = filePtr->getFileSize();
-        int64 currentOffset = 0;
-        uint maxSize = bufferSize;
+        std::list<BaseStream*> localStreamList;
+        uintmax_t fileSize = filePtr->getFileSize();
+        uintmax_t currentOffset = 0;
+        unsigned int maxSize = bufferSize;
         short int rollbackSize = 16;
         char *buffer = new char[bufferSize];
 
@@ -29,7 +30,7 @@ namespace mmp {
             filePtr->seek(currentOffset);
 
             if (currentOffset + bufferSize > fileSize) {
-                bufferSize = static_cast<uint>(fileSize - currentOffset);
+                bufferSize = static_cast<unsigned int>(fileSize - currentOffset);
             }
 
             filePtr->read(bufferSize, buffer);
@@ -52,7 +53,7 @@ namespace mmp {
         return;
     }
 
-    std::list<Stream>& StreamAnalyzer::getStreamList() {
+    std::list<BaseStream*>& StreamAnalyzer::getStreamList() {
         return streamList;
     }
 }
