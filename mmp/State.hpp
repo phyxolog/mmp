@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef STATE_HPP
+#define STATE_HPP
+
 #include <experimental/filesystem>
 #include <string>
 #include <map>
@@ -22,13 +25,11 @@ namespace mmp {
             { "wav", true },
         };
 
-        static State *instance() {
-            if (!_instance) {
-                _instance = new State();
-            }
+        std::map<std::string, unsigned int> compressorOptions = {
+            { "tak", 9 },
+        };
 
-            return _instance;
-        }
+        static State *instance();
 
     private:
         State() { };
@@ -37,6 +38,6 @@ namespace mmp {
 
         static State *_instance;
     };
-
-    State *State::_instance = 0;
 }
+
+#endif // STATE_HPP

@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "Types.hpp"
 #include "TurboBM.hpp"
 #include "RiffWaveStream.hpp"
 #include "IStreamDetector.hpp"
@@ -65,9 +66,23 @@ namespace mmp {
                 filePtr->seek((*stream)->getOffset());
                 filePtr->read(sizeof(Header), header);
                 
-                (*stream)->setSize(header->ChunkSize + 8);
+                unsigned long realSize = 4 + (8 + header->Subchunk1Size) + (8 + header->Subchunk2Size);
 
-                std::cout << header->ChunkSize + 8 << std::endl;
+                // [X] Invalid header
+                if (realSize != header->ChunkSize) {
+                    DiffType dt;
+
+                    dt.newData = ::operator new(4);
+                    dt.oldData = ::operator new(4);
+
+                    dt.size = 4;
+                    dt.offset = 4;
+                    memcpy(dt.newData, &realSize, 4);
+                    memcpy(dt.oldData, &header->ChunkSize, 4);
+                    (*stream)->addDiff(dt);
+                }
+
+                (*stream)->setSize(realSize + 8);
 
                 // TODO: Analyze stream on compressible/validable
             }

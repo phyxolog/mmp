@@ -42,6 +42,9 @@
     <ClCompile Include="FileStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.hpp">
@@ -80,5 +83,10 @@
     <ClInclude Include="FileStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Types.hpp">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
