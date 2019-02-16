@@ -27,6 +27,7 @@ namespace mmp {
 
         std::map<std::string, unsigned int> compressorOptions = {
             { "tak", 9 },
+            { "frog", 0 },
         };
 
         static State *instance();

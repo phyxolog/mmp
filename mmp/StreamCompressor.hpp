@@ -9,6 +9,9 @@
 #include "FileStream.hpp"
 #include "Utils.hpp"
 #include "State.hpp"
+#include "IExternalCompressor.hpp"
+#include "takCompressor.hpp"
+#include "frogCompressor.hpp"
 
 namespace mmp {
     const char Signature[3] = { 'M', 'C', 'F' };
@@ -27,6 +30,7 @@ namespace mmp {
         uintmax_t originalOffset;
         uintmax_t originalSize;
         uint32_t originalCRC32;
+        std::string compressorType;
     } CompressedStream;
 
 #pragma pack(push, 1)
@@ -53,8 +57,7 @@ namespace mmp {
         unsigned int bufferSize;
         mmp::FileStream *filePtr, *cFilePtr;
 
-        void CompressStream(BaseStream&, CompressedStream&, fs::path&);
-        bool TakCompress(fs::path, fs::path&, unsigned short);
+        void compressStream(BaseStream&, CompressedStream&, fs::path&);
 
     public:
         StreamCompressor(mmp::FileStream *filePtr, mmp::FileStream *cFilePtr, unsigned int bufferSize);

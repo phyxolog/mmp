@@ -33,7 +33,7 @@ namespace mmp {
             }
 
             fs::path outCompressedFileName;
-            CompressStream((*stream), compressedStream, outCompressedFileName);
+            compressStream((*stream), compressedStream, outCompressedFileName);
 
             if (compressedStream.compressedSize >= (*stream).getSize()) {
                 Utils::copyData(filePtr, cFilePtr, (*stream).getOffset(), (*stream).getSize());
@@ -41,7 +41,7 @@ namespace mmp {
                 continue;
             }
 
-            std::cout << "c_Tak: " << (*stream).getSize() << " --> " << compressedStream.compressedSize << std::endl;
+            std::cout << "c_" << compressedStream.compressorType << ": " << (*stream).getSize() << " --> " << compressedStream.compressedSize << std::endl;
 
             std::memcpy(compressedStream.metaData.type, (*stream).getTypeAsShortString().c_str(), (*stream).getTypeAsShortString().length());
             compressedStream.compressedOffset = cFilePtr->seek(0, fs_types::fileCurrent);
@@ -103,7 +103,7 @@ namespace mmp {
         cFilePtr->write(sizeof(PackerHeader), &Header);
     }
 
-    void StreamCompressor::CompressStream(BaseStream &stream, CompressedStream &compressedStream, fs::path &outputFile) {
+    void StreamCompressor::compressStream(BaseStream &stream, CompressedStream &compressedStream, fs::path &outputFile) {
         std::string outFileName = std::to_string(stream.getOffset())
             + "_" + std::to_string(stream.getSize())
             + "." + stream.getFileExtension();
@@ -124,10 +124,19 @@ namespace mmp {
             outFilePtr->close();
         }
 
-        // TOOD: Choose compressor
-        if (stream.getTypeAsShortString() == "RW" && State::instance()->analyzerOptions["wav"]) { // RIFF WAVE
-            result = TakCompress(outFile, outputFile, State::instance()->compressorOptions["tak"]);
+        IExternalCompressor *compressor = new IExternalCompressor();
+
+        if (stream.getTypeAsShortString() == RIFF_WAVE_SHORT_TYPE
+            && State::instance()->analyzerOptions["wav"]) {
+            if (State::instance()->compressorOptions["tak"] > 0) {
+                compressor = new TakCompressor(outFile, outputFile, State::instance()->compressorOptions["tak"]);
+            } else if (State::instance()->compressorOptions["frog"] > 0) {
+                compressor = new FrogCompressor(outFile, outputFile, State::instance()->compressorOptions["frog"]);
+            }
         }
+
+        result = compressor->execute(outputFile);
+        compressedStream.compressorType = compressor->getType();
 
         if (result) {
             compressedStream.compressedSize = fs::file_size(outputFile);
@@ -136,53 +145,5 @@ namespace mmp {
         }
 
         fs::remove(outFile);
-    }
-
-    bool StreamCompressor::TakCompress(fs::path inputFile, fs::path &outputFile, unsigned short level) {
-        std::string _level = "";
-        outputFile = fs::path(inputFile).replace_extension(".tak");
-
-        switch (level)
-        {
-        case 1:
-            _level = "-p0";
-            break;
-        case 2:
-            _level = "-p1";
-            break;
-        case 3:
-            _level = "-p1m";
-            break;
-        case 4:
-            _level = "-p2";
-            break;
-        case 5:
-            _level = "-p2m";
-            break;
-        case 6:
-            _level = "-p3";
-            break;
-        case 7:
-            _level = "-p3m";
-            break;
-        case 8:
-            _level = "-p4";
-            break;
-        case 9:
-            _level = "-p4m";
-            break;
-        default:
-            return false;
-        }
-
-        std::stringstream args;
-        args
-            << "-e -overwrite -wm0 -tn4 "
-            << _level << " "
-            << "\"" << inputFile.string() << "\" "
-            << "\"" << outputFile.string() << "\"";
-
-        int result = Utils::execAndWait(fs::absolute(fs::path("packers/tak.exe")).string(), args.str());
-        return result == 0;
     }
 }

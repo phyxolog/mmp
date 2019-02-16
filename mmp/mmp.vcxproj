@@ -156,6 +156,8 @@
     <ClInclude Include="Crc32.hpp" />
     <ClInclude Include="FileStream.hpp" />
     <ClInclude Include="BaseStream.hpp" />
+    <ClInclude Include="frogCompressor.hpp" />
+    <ClInclude Include="IExternalCompressor.hpp" />
     <ClInclude Include="IStreamDetector.hpp" />
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="RiffWaveDetector.hpp" />
@@ -163,6 +165,7 @@
     <ClInclude Include="State.hpp" />
     <ClInclude Include="StreamAnalyzer.hpp" />
     <ClInclude Include="StreamCompressor.hpp" />
+    <ClInclude Include="takCompressor.hpp" />
     <ClInclude Include="TurboBM.hpp" />
     <ClInclude Include="Utils.hpp" />
   </ItemGroup>

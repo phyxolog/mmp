@@ -22,6 +22,12 @@
     <Filter Include="Header Files\streams">
       <UniqueIdentifier>{8db9e991-dbe0-4b14-911e-4ce394e8adb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\externalCompressors">
+      <UniqueIdentifier>{7a6df926-9b3d-4051-bea6-ce63bef6f4b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\externalCompressors\interface">
+      <UniqueIdentifier>{89eef783-9b1d-49a2-ba53-e15558c29164}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -82,6 +88,15 @@
     </ClInclude>
     <ClInclude Include="FileStream.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalCompressor.hpp">
+      <Filter>Header Files\externalCompressors\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="takCompressor.hpp">
+      <Filter>Header Files\externalCompressors</Filter>
+    </ClInclude>
+    <ClInclude Include="frogCompressor.hpp">
+      <Filter>Header Files\externalCompressors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

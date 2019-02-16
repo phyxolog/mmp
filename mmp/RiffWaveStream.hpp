@@ -14,7 +14,7 @@ namespace mmp {
         }
 
         std::string  getTypeAsShortString() {
-            return "RW";
+            return RIFF_WAVE_SHORT_TYPE;
         }
     };
 }

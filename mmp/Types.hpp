@@ -5,6 +5,8 @@
 
 #include <cstdint>
 
+#define RIFF_WAVE_SHORT_TYPE "RW"
+
 namespace mmp {
 #pragma pack(push, 1)
     typedef struct DiffType {
